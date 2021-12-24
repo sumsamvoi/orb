@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/paulmach/orb"
+	"github.com/paulmach/orb/geo"
 )
 
 // HaversineDistanceFromSegment returns point's haversine distance on earth from the segment [a, b] in kilometers.
@@ -29,7 +30,7 @@ func HaversineDistanceFromSegment(a, b, point orb.Point) float64 {
 	dx = point[0] - x
 	dy = point[1] - y
 
-	return HaversineDistance(point,orb.Point{x,y})
+	return geo.DistanceHaversine(point, orb.Point{x, y})
 }
 
 // HaversineDistanceFrom returns the distance on earth from the boundary of the geometry in
@@ -38,7 +39,6 @@ func HaversineDistanceFrom(g orb.Geometry, p orb.Point) float64 {
 	d, _ := HaversineDistanceFromWithIndex(g, p)
 	return d
 }
-
 
 // HaversineDistanceFromWithIndex returns the minimum haversine distance on earth in kilometers
 // from the boundary of the geometry plus the index of the sub-geometry
@@ -50,7 +50,7 @@ func HaversineDistanceFromWithIndex(g orb.Geometry, p orb.Point) (float64, int) 
 
 	switch g := g.(type) {
 	case orb.Point:
-		return HaversineDistance(g, p), 0
+		return geo.DistanceHaversine(g, p), 0
 	case orb.MultiPoint:
 		return multiPointHaversineDistanceFrom(g, p)
 	case orb.LineString:
@@ -104,7 +104,7 @@ func multiPointHaversineDistanceFrom(mp orb.MultiPoint, p orb.Point) (float64, i
 	index := -1
 
 	for i := range mp {
-		if d := HaversineDistance(mp[i], p); d < dist {
+		if d := geo.DistanceHaversine(mp[i], p); d < dist {
 			dist = d
 			index = i
 		}
@@ -165,5 +165,5 @@ func segmentHaversineDistanceFrom(p1, p2, point orb.Point) float64 {
 	dx = point[0] - x
 	dy = point[1] - y
 
-	return HaversineDistance(point,orb.Point{x,y})
+	return geo.DistanceHaversine(point, orb.Point{x, y})
 }
